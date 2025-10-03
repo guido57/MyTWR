@@ -100,7 +100,7 @@ uint32_t lcg_rnd(void)
 void setup(void)
 {
     Serial.begin(115200);
-
+    delay(5000);
     // Initializing PMU is related to other peripherals
     twr.begin();
 

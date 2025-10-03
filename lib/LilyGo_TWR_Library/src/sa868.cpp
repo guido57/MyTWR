@@ -85,9 +85,9 @@ bool SA868::factoryNVS()
 
 bool SA868::begin(Stream &serial, enum RadioType type)
 {
-    _transmitStatus = false;
-    xSemaphore = xSemaphoreCreateBinary();
-    unlock();
+    // _transmitStatus = false;
+    // xSemaphore = xSemaphoreCreateBinary();
+    // unlock();
 
     this->serial = &serial;
 
@@ -116,56 +116,56 @@ bool SA868::begin(Stream &serial, enum RadioType type)
         return false;
     }
 
-    if (fwType == SA8X8_OPENRTX) {
-        log_e("OpenRTX community firmware is not currently supported");
-        return false;
-    }
+    // if (fwType == SA8X8_OPENRTX) {
+    //     log_e("OpenRTX community firmware is not currently supported");
+    //     return false;
+    // }
 
-    // For Rev2.0 the BAND is obtained from NVS
-    if (type != SA8X8_UNKNOW) {
-        this->pdat.type = type;
-    }
+    // // For Rev2.0 the BAND is obtained from NVS
+    // if (type != SA8X8_UNKNOW) {
+    //     this->pdat.type = type;
+    // }
 
-    if (!prefs.begin(SQL_KEY)) {
-        log_e("NVS init failed");
-        return false;
-    }
+    // if (!prefs.begin(SQL_KEY)) {
+    //     log_e("NVS init failed");
+    //     return false;
+    // }
 
-    size_t schLen = prefs.getBytes(SQL_KEY, &this->pdat, sizeof(this->pdat));
-    if (schLen == 0) { // simple check that data fits
+    // size_t schLen = prefs.getBytes(SQL_KEY, &this->pdat, sizeof(this->pdat));
+    // if (schLen == 0) { // simple check that data fits
 
-        // For Rev2.0, it is impossible to detect which type it belongs to, the default is UHF
-        if (type == SA8X8_UNKNOW) {
-            this->pdat.type = SA8X8_UHF;
-        }
+    //     // For Rev2.0, it is impossible to detect which type it belongs to, the default is UHF
+    //     if (type == SA8X8_UNKNOW) {
+    //         this->pdat.type = SA8X8_UHF;
+    //     }
 
-        factoryNVS();
+    //     factoryNVS();
 
-    }
+    // }
 
-    if (type != SA8X8_UNKNOW) {
-        if (this->pdat.type != type) {
-            this->pdat.type = type;
-            factoryNVS();
-        }
-    }
+    // if (type != SA8X8_UNKNOW) {
+    //     if (this->pdat.type != type) {
+    //         this->pdat.type = type;
+    //         factoryNVS();
+    //     }
+    // }
 
 
-    log_i("RadioType:%s", this->pdat.type == SA8X8_UHF ? "UHF" : this->pdat.type == SA8X8_VHF ? "VHF" : "UNKNOW");
-    log_i("TransFreq:%lu", this->pdat.transFreq);
-    log_i("RecvFreq :%lu", this->pdat.recvFreq);
-    log_i("TX CXCSS :%u", this->pdat.txCXCSS);
-    log_i("RX CXCSS :%u", this->pdat.rxCXCSS);
-    log_i("BandWidth:%u", this->pdat.bandwidth);
-    log_i("SQ       :%u", this->pdat.SQ);
-    log_i("Volume   :%u", this->pdat.volume);
-    log_i("Emphasis :%d", this->pdat.emphasis);
-    log_i("HighPass :%d", this->pdat.highPass);
-    log_i("LowPass  :%d", this->pdat.lowPass);
-    log_i("TxPower  :[%d] %s", this->pdat.txPower, this->pdat.txPower ?   "LOW (1.6W)" : "HIGH(1.8W)");
-    setGroup(this->pdat.txPower, this->pdat.transFreq, this->pdat.recvFreq, (teCXCSS)this->pdat.txCXCSS, this->pdat.SQ, (teCXCSS)this->pdat.rxCXCSS);
-    setFilter(this->pdat.emphasis, this->pdat.highPass, this->pdat.lowPass);
-    this->pdat.txPower ?  lowPower() : highPower() ;
+    // log_i("RadioType:%s", this->pdat.type == SA8X8_UHF ? "UHF" : this->pdat.type == SA8X8_VHF ? "VHF" : "UNKNOW");
+    // log_i("TransFreq:%lu", this->pdat.transFreq);
+    // log_i("RecvFreq :%lu", this->pdat.recvFreq);
+    // log_i("TX CXCSS :%u", this->pdat.txCXCSS);
+    // log_i("RX CXCSS :%u", this->pdat.rxCXCSS);
+    // log_i("BandWidth:%u", this->pdat.bandwidth);
+    // log_i("SQ       :%u", this->pdat.SQ);
+    // log_i("Volume   :%u", this->pdat.volume);
+    // log_i("Emphasis :%d", this->pdat.emphasis);
+    // log_i("HighPass :%d", this->pdat.highPass);
+    // log_i("LowPass  :%d", this->pdat.lowPass);
+    // log_i("TxPower  :[%d] %s", this->pdat.txPower, this->pdat.txPower ?   "LOW (1.6W)" : "HIGH(1.8W)");
+    // setGroup(this->pdat.txPower, this->pdat.transFreq, this->pdat.recvFreq, (teCXCSS)this->pdat.txCXCSS, this->pdat.SQ, (teCXCSS)this->pdat.rxCXCSS);
+    // setFilter(this->pdat.emphasis, this->pdat.highPass, this->pdat.lowPass);
+    // this->pdat.txPower ?  lowPower() : highPower() ;
     return true;
 }
 
@@ -202,6 +202,7 @@ bool SA868::isConnected()
         unlock();
         return true;
     }
+    unlock();
     return false;
 }
 
@@ -504,6 +505,7 @@ bool SA868::waitResponse(String &data, String rsp, uint32_t timeout)
     do {
         while (serial->available() > 0) {
             int8_t ch = serial->read();
+            printf("%c", ch);
             data += static_cast<char>(ch);
             if (rsp.length() && data.endsWith(rsp)) {
                 return true;

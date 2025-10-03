@@ -61,4 +61,4 @@
 #define SA868_SQL       (2)
 
 #define GPSSerial        Serial2
-#define RadioSerial      Serial1
+#define RadioSerial      Serial2

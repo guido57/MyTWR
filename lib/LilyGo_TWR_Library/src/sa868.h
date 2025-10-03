@@ -207,6 +207,8 @@ public:
 
     ~SA868();
 
+    Stream *serial = NULL;
+
     void setPins(uint8_t pttPin, uint8_t pdPin, uint8_t rfPin = 0xFF);
 
     const char *firmwareType();
@@ -354,7 +356,6 @@ private:
 protected:
     FirmwareType fwType = SA8X8_NICERF;
     Preferences prefs;
-    Stream *serial = NULL;
     uint8_t transmitPin = 0;
     uint8_t powerDownPin  = 0;
     uint8_t powerControlPin  = 0;

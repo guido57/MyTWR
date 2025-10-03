@@ -212,27 +212,27 @@ bool TWRClass::begin(TWR_Model model)
 {
     Wire.begin(I2C_SDA, I2C_SCL);
 
-    SPI.begin(SPI_SCK, SPI_MISO, SPI_MOSI);
+    // SPI.begin(SPI_SCK, SPI_MISO, SPI_MOSI);
 
-    // GNSS Serial
-    GPSSerial.begin(GNSS_BAUD_RATE, SERIAL_8N1, GNSS_RX_PIN, GNSS_TX_PIN);
+    // // GNSS Serial
+    // GPSSerial.begin(GNSS_BAUD_RATE, SERIAL_8N1, GNSS_RX_PIN, GNSS_TX_PIN);
 
     // SA8x8 Serial
     RadioSerial.begin(9600, SERIAL_8N1, SA868_RX_PIN, SA868_TX_PIN);
 
-    pinMode(GNSS_PPS_PIN, INPUT);
+    // pinMode(GNSS_PPS_PIN, INPUT);
 
     // Microphone
-    pinMode(MIC_CTRL_PIN, OUTPUT);
+    // pinMode(MIC_CTRL_PIN, OUTPUT);
     // Set the audio input channel to Mic -> Radio
     // digitalWrite(MIC_CTRL_PIN, LOW);
     // Set the audio input channel to Mic -> ESP
     // digitalWrite(MIC_CTRL_PIN, HIGH);
 
-    if (!beginPower()) {
-        log_e("PMU is not online.");
-        return false;
-    }
+    // if (!beginPower()) {
+    //     log_e("PMU is not online.");
+    //     return false;
+    // }
 
     // Set SA8x8 PowerDown to HIGH
     pinMode(SA868_PD_PIN, OUTPUT);
@@ -268,59 +268,59 @@ bool TWRClass::begin(TWR_Model model)
 
     enableRadio();
 
-    enableMicrophone();
+    // enableMicrophone();
 
-    enableSD();
+    // enableSD();
 
-    enableGPS();
+    // enableGPS();
 
-    if (_version == TWR_REV2V1) {
-        // Rev2.1 has an additional pin to monitor whether it is in the receiving state.
-        pinMode(SA868_SQL, INPUT_PULLUP);
-        attachInterrupt(SA868_SQL, []() {
-            if (digitalRead(SA868_SQL)) {
-                isReceiving = false;
-            } else {
-                isReceiving = true;
-            }
-        }, CHANGE);
+    // if (_version == TWR_REV2V1) {
+    //     // Rev2.1 has an additional pin to monitor whether it is in the receiving state.
+    //     pinMode(SA868_SQL, INPUT_PULLUP);
+    //     attachInterrupt(SA868_SQL, []() {
+    //         if (digitalRead(SA868_SQL)) {
+    //             isReceiving = false;
+    //         } else {
+    //             isReceiving = true;
+    //         }
+    //     }, CHANGE);
 
         // Rev2.1 now allows you to switch the audio amplifier input source selection
-        routingSpeakerChannel(TWR_RADIO_TO_SPK);
+        // routingSpeakerChannel(TWR_RADIO_TO_SPK);
 
         // Rev2.1 can route the serial port to the SA868 download interface
-        routingIO2Downloader(TWR_IO_MUX_PIN);
-    } else {
-        // // When using Rev2.0, do not use IO38 to control power and keep IO open drain
-        // pinMode(SA868_RF_PIN, HIGH);
-    }
+        // routingIO2Downloader(TWR_IO_MUX_PIN);
+    // } else {
+    //     // // When using Rev2.0, do not use IO38 to control power and keep IO open drain
+    //     // pinMode(SA868_RF_PIN, HIGH);
+    // }
 
-    initPreferences();
+    // initPreferences();
 
-    routingMicrophoneChannel(TWR_MIC_TO_RADIO);
+    // routingMicrophoneChannel(TWR_MIC_TO_RADIO);
 
 
-    if (XPowersAXP2101::isCharging()) {
-        _isChargeStart = true;
-    }
+    // if (XPowersAXP2101::isCharging()) {
+    //     _isChargeStart = true;
+    // }
 
-    deviceScan(NULL);
+    deviceScan(&Serial);
 
-    DBG("----------------------------------------------------------------------------");
-    DBG("DCDC1  : ", isEnableDC1()  ? "+" : "-",  "Voltage:", getDC1Voltage(), "mV");
-    DBG("DCDC2  : ", isEnableDC2()  ? "+" : "-",  "Voltage:", getDC2Voltage(), "mV");
-    DBG("DCDC3  : ", isEnableDC3()  ? "+" : "-",  "Voltage:", getDC3Voltage(), "mV");
-    DBG("DCDC4  : ", isEnableDC4()  ? "+" : "-",  "Voltage:", getDC4Voltage(), "mV");
-    DBG("DCDC5  : ", isEnableDC5()  ? "+" : "-",  "Voltage:", getDC5Voltage(), "mV");
-    DBG("----------------------------------------------------------------------------");
-    DBG("ALDO1  : ", isEnableALDO1()  ? "+" : "-", "Voltage:", getALDO1Voltage(), "mV");
-    DBG("ALDO2  : ", isEnableALDO2()  ? "+" : "-", "Voltage:", getALDO2Voltage(), "mV");
-    DBG("ALDO3  : ", isEnableALDO3()  ? "+" : "-", "Voltage:", getALDO3Voltage(), "mV");
-    DBG("ALDO4  : ", isEnableALDO4()  ? "+" : "-", "Voltage:", getALDO4Voltage(), "mV");
-    DBG("----------------------------------------------------------------------------");
-    DBG("BLDO1  : ", isEnableBLDO1()  ? "+" : "-", "Voltage:", getBLDO1Voltage(), "mV");
-    DBG("BLDO2  : ", isEnableBLDO2()  ? "+" : "-", "Voltage:", getBLDO2Voltage(), "mV");
-    DBG("----------------------------------------------------------------------------");
+    // DBG("----------------------------------------------------------------------------");
+    // DBG("DCDC1  : ", isEnableDC1()  ? "+" : "-",  "Voltage:", getDC1Voltage(), "mV");
+    // DBG("DCDC2  : ", isEnableDC2()  ? "+" : "-",  "Voltage:", getDC2Voltage(), "mV");
+    // DBG("DCDC3  : ", isEnableDC3()  ? "+" : "-",  "Voltage:", getDC3Voltage(), "mV");
+    // DBG("DCDC4  : ", isEnableDC4()  ? "+" : "-",  "Voltage:", getDC4Voltage(), "mV");
+    // DBG("DCDC5  : ", isEnableDC5()  ? "+" : "-",  "Voltage:", getDC5Voltage(), "mV");
+    // DBG("----------------------------------------------------------------------------");
+    // DBG("ALDO1  : ", isEnableALDO1()  ? "+" : "-", "Voltage:", getALDO1Voltage(), "mV");
+    // DBG("ALDO2  : ", isEnableALDO2()  ? "+" : "-", "Voltage:", getALDO2Voltage(), "mV");
+    // DBG("ALDO3  : ", isEnableALDO3()  ? "+" : "-", "Voltage:", getALDO3Voltage(), "mV");
+    // DBG("ALDO4  : ", isEnableALDO4()  ? "+" : "-", "Voltage:", getALDO4Voltage(), "mV");
+    // DBG("----------------------------------------------------------------------------");
+    // DBG("BLDO1  : ", isEnableBLDO1()  ? "+" : "-", "Voltage:", getBLDO1Voltage(), "mV");
+    // DBG("BLDO2  : ", isEnableBLDO2()  ? "+" : "-", "Voltage:", getBLDO2Voltage(), "mV");
+    // DBG("----------------------------------------------------------------------------");
 
     return true;
 }
